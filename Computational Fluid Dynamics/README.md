@@ -3,4 +3,4 @@
 
 One of my earlier research projects that included computational fluid dynamics in ANSYS to study wind energy ecosystem in India.  
 
-(Never submitted to any journal)
+(Never submitted to any journal.)
