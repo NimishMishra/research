@@ -1,10 +1,6 @@
-# research
-Collection of (my) research preprints and associated code
+# REMOVAL OF TOXIC HEAVY METAL IONS USING MODIFIED ADSORBENT
 
-[ResearchGate profile](https://www.researchgate.net/profile/Nimish_Mishra)
+Extended [previous work](https://github.com/NimishMishra/research/tree/master/z_Toxic%20metal%20ions) by modifying the adsorbent and achieving better results
 
-[Google Scholar profile](https://scholar.google.com/citations?user=LWFyS-gAAAAJ&hl=en&authuser=1)
 
-[Medium profile](https://medium.com/@neelam.nimish)
-
-[LinkedIn profile](https://www.linkedin.com/in/nimish-mishra-2ab313106/)
+[Pollution Research, EM International](http://www.envirobiotechjournals.com/article_abstract.php?aid=8650&iid=248&jid=4)
