@@ -1,0 +1,41 @@
+
+topd = /home/whaley/git/math-atlas/AtlasBase
+ext  = /home/whaley/git/math-atlas/STAB/xextract
+extF = $(ext) -langF -lnlen71 -Remtblank -llwarn2 -LAPACK1 $(incs)
+ext9 = $(ext) -langF -lnlen132 -RemtBlank $(incs)
+extC = $(ext) -langC -lnlen79 -Remtblank -llwarn2 $(incs)
+extM = $(ext) -langM -lnlen79 -llwarn2 $(incs)
+incs = -def topd /home/whaley/git/math-atlas/AtlasBase \
+       -def incd /home/whaley/git/math-atlas/AtlasBase/Clint \
+       -def ext  /home/whaley/git/math-atlas/STAB/xextract \
+       -def BASEdir /home/whaley/git/math-atlas/AtlasBase/Antoine/ \
+       -def basd /home/whaley/git/math-atlas/AtlasBase/Clint
+
+default: all
+force_build:
+basd = /home/whaley/git/math-atlas/AtlasBase/Clint
+basdRCW = /home/whaley/git/math-atlas/AtlasBase/Clint
+basdAPP = /home/whaley/git/math-atlas/AtlasBase/Antoine
+basdSTU = /home/whaley/git/math-atlas/AtlasBase/Students
+incf = /home/whaley/git/math-atlas/AtlasBase/gen.inc
+
+files = Core264SSE3.tar.bz2 Corei264AVX.tar.bz2
+basdw = $(basdRCW)/misc/ARCHDEF/WIN64
+
+all : $(files) 
+
+Corei264AVX.tar.bz2 : $(basdw)/Corei264AVX
+	- rm -f /tmp/Corei264AVX.tar /tmp/Corei264AVX.tar.bz2
+	cd $(basdw) ; tar --dereference --exclude 'CVS' -c -f \
+           /tmp/Corei264AVX.tar Corei264AVX
+	bzip2 /tmp/Corei264AVX.tar
+	mv /tmp/Corei264AVX.tar.bz2 ./.
+Core264SSE3.tar.bz2 : $(basdw)/Core264SSE3
+	- rm -f /tmp/Core264SSE3.tar /tmp/Core264SSE3.tar.bz2
+	cd $(basdw) ; tar --dereference --exclude 'CVS' -c -f \
+           /tmp/Core264SSE3.tar Core264SSE3
+	bzip2 /tmp/Core264SSE3.tar
+	mv /tmp/Core264SSE3.tar.bz2 ./.
+
+Make.ext : $(topd)/make.base
+	$(extM) -b $(topd)/make.base -o Make.ext rout=atlas/config/archs/win64
