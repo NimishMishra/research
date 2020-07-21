@@ -1,0 +1,1 @@
+flint installation: /usr/local/include

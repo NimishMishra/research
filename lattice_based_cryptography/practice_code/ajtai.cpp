@@ -1,6 +1,6 @@
-#include <stdio.h>
-#include <gsl/gsl_vector.h>
-#include <iostream>
+// g++ -I/usr/local/include/flint/ ajtai.cpp
+
+#include "fmpz_mat.h"
 
 
 int main(){
