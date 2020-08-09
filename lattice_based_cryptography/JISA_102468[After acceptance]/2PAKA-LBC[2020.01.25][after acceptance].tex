@@ -1,0 +1,1291 @@
+\documentclass[10pt]{elsarticle}
+%\documentclass[3p,times]{elsarticle}
+%\documentclass[review]{elsarticle}
+\usepackage{booktabs}
+\usepackage[scale=2]{ccicons}
+\usepackage{pgfplots}
+\usepackage{xspace}
+\usepackage{latexsym,amsmath,amssymb,amsfonts,epsfig}
+\usepackage{ragged2e}
+\usepackage[nooneline]{subfigure}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{tabularx}
+\usepackage[flushleft]{threeparttable}
+\usepackage{eqnarray,amsmath}
+\usepackage{stackrel}
+\usepackage{algorithm}
+\usepackage[nooneline]{subfigure}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{tabularx}
+\usepackage[flushleft]{threeparttable}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{adjustbox}
+\usepackage{epstopdf}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage[english]{babel}
+\usepackage[applemac]{inputenc}
+\usepackage{mathptmx}
+\usepackage[flushleft]{threeparttable}
+\usepackage[font=small,skip=3pt]{caption}
+\usepackage{url}
+\usepackage{xcolor}
+\usepackage{caption}
+\usepackage{algorithmic,algorithm}
+\usepackage{multirow,multicol}
+\usepackage{tikz}
+\usetikzlibrary{datavisualization}
+\usetikzlibrary{datavisualization.formats.functions}
+\usetikzlibrary{calc}
+\usepackage{pgf-umlsd}
+\usepackage{moreverb}
+\usepackage{fix-cm}
+\usepackage{hyperref}
+\usepackage{soul}
+\newcommand{\hll}[1]{\colorbox{yellow}{$\displaystyle #1$}}
+
+\makeatletter
+\usepackage[margin=1 in]{geometry}
+\newcommand\xleftrightarrow[2][]{%
+\ext@arrow 9999{\longleftrightarrowfill@}{#1}{#2}}
+\newcommand\longleftrightarrowfill@{%
+\arrowfill@\leftarrow\relbar\rightarrow}
+\makeatother
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{mydef}{Definition}
+\newtheorem{rem}{Remarks}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{document}
+\begin{frontmatter}
+\title{Provably Secure Two-Party Authenticated Key Agreement Protocol for Post-Quantum Environments}
+
+\author{SK Hafizul Islam\fnref{label2},$^*$}
+\ead{hafi786@gmail.com} \fntext[label2]{Department of Computer
+Science and Engineering, Indian Institute of Information Technology
+Kalyani, West Bengal 741235, India.}
+
+\cortext[cor1]{Corresponding author. (SK Hafizul Islam)}
+
+
+\begin{abstract}
+A two-party authenticated key agreement (2PAKA) protocol is a
+cryptographic tool employed widely to allow two users to generate a
+shared and fresh session key between them in each session over an
+insecure network. The authenticated version of a two-party key
+agreement protocol is popular because it can easily withstand the
+impersonation of the user. In the literature, many 2PAKA protocols
+have been put forward with the intractability assumptions of the
+discrete logarithm (DLP) problem and integer factorization problem
+(IFP). Some recent studies showed that the 2PAKA protocols based on
+these assumptions are insecure in post-quantum environments. To
+resolve this issue, we have designed a lattice-based 2PAKA
+(LB-2PAKA) protocol with the intractability of the
+ring-learning-with-errors (RLWE) problem. The proposed LB-2PAKA
+protocol is also analyzed in the random oracle model to measure
+provable security and to estimate the breaching time. To evaluate
+the performance, we used the LatticeCrypto Library and estimated the
+running time of our LB-2PAKA protocol. Besides, we analyzed the
+communication cost requirement of our LB-2PAKA protocol.
+\begin{keyword}
+Authenticated Key Agreement, Lattice, Provable security, Random
+Oracle Model, Ring-Learning-with-Errors.
+\end{keyword}
+\end{abstract}
+\end{frontmatter}
+
+\section{Introduction}
+\label{L1} A two-part key agreement (2PKA) protocol is a
+cryptographic primitive that allows two users to set up a common and
+fresh session key in each session among them over an insecure
+network. In this kind of protocol, two users are involved: (i)
+\emph{initiator}, who will initiate the protocol, and (ii)
+\emph{responder}, who will respond to the \emph{initiator}. In the
+literature, an unauthenticated version of the 2PKA protocol was
+introduced by Diffie and Hellman \cite{Diffie1976}. However, this
+unauthenticated protocol was vulnerable to the man-in-the-middle
+attack. The main reason is that a sender sends a message without
+signing it to a receiver, and an adversary can replace the message
+by a forged message, which can not be detected by the receiver.
+Therefore, the authenticated key agreement (AKA) protocol is popular
+for practical applications. In an AKA protocol, each user can verify
+other users, so that an adversary cannot impersonate any user and
+hence, cannot perform the man-in-the-middle attack.
+
+\subsection{Motivations and Contributions}\label{L11}
+We have designed a two-party AKA (2PAKA) protocol in this paper. In
+the literature, many 2PAKA protocols
+\cite{Cao2010,holbl2012,dang2018,Islamgpwpc2015,Tseng2007} have been
+put forward based on the integer factorization problem (IFP), the
+RSA problem, the discrete logarithm problem (DLP), or the
+computational Diffie-Hellman (CDH) problem. However, some recent
+studies \cite{PWShor1994,PWShor1999} showed that these hard problems
+are vulnerable by a polynomial time-bounded algorithm in quantum
+computing environments. Recently, the NIST has inaugurated a
+post-quantum crypto project\cite{NIST2016} to design and standardize
+robust cryptographic tools in the post-quantum environments.
+Recently, one of the mathematical tools, known as \emph{ideal
+lattice} has attracted security scholars to design secure
+cryptographic mechanisms based on lattices due to the following
+reasons: (i) the operations performed in a lattice are much faster
+than other operations executed in a non-lattice-based protocol
+\cite{FengHe2018}, (ii) lattice-based cryptographic tools are
+designed with the intractability assumption of the worst-case
+problems, while the traditional cryptographic protocols are devised
+using the average-case problems, and (iii) the hardness assumptions
+on the ideal lattices can resist the quantum computing attacks. In
+contrast, non-lattice based computational problems are vulnerable in
+the same environments. Accordingly, we have motivated to design a
+lattice-based 2PAKA (LB-2PAKA) protocol suitable for post-quantum
+environments. Our LB-2PAKA protocol exhibit the following merits:
+\begin{description}
+\item[\textbf{(1)}]~We proposed an LB-2PAKA protocol on ideal lattices based on the ring-learning-with-errors (RLWE) problem. The RLWE problem is assumed as hard as some computational problems in the worst-case on ideal lattices.
+\item[\textbf{(2)}]~The proposed LB-2PAKA protocol is analyzed in the random oracle model (ROM), which exhibits that it is provably secure against the RLWE problem on ideal lattices.
+\item[\textbf{(3)}]~In our LB-2PAKA protocol, two users can establish a secure session key among them over an insecure network. To avoid the ephemeral secret leakage (ESL) attack, we included the long-term static private keys of the users and the ephemeral secrets selected by the users in the session key.
+\item[\textbf{(4)}]~The performance of our LB-2PAKA protocol is evaluated using the LatticeCrypto Library \cite{LCL2019}, which is used popularly in many lattice-based protocols \cite{FengHe2018,Saraswathy2017}.
+\item[\textbf{(5)}]~The informal security analysis demonstrated that our LB-2PAKA protocol could provide resilience against the known active and passive attacks.
+\end{description}
+
+\subsection{Reviews on Lattice-based Protocols}\label{L12}
+In the literature, many cryptographic scholars have initiated to
+proposed some lattice-based cryptographic protocols. In 2007, Ding
+et al. \cite{DingJ2007} firstly put forwarded an unauthenticated
+Diffie-Hellman key agreement protocol using a password. The protocol
+is analyzed to be provably secure in the ROM with the intractability
+assumption of the RLWE problem on ideal lattices. In the ROM, Ding
+et al. \cite{Saraswathy2017} designed two different client-server
+authentication (CSA) protocols with the intractability assumption of
+the RLWE problem. Later on, Feng et al. \cite{FengHe2018} put
+forwarded a provably secure and anonymous CSA protocol for mobile
+users with the intractability assumption of the RLWE problem on
+ideal lattices. Zhang et al. \cite{ZhangJ2015} firstly proposed a
+provably secure and two-pass lattice-based unauthenticated two-party
+key agreement protocol with the intractability assumption of the
+RLWE problem. In this protocol, the initiator $U_{i}$ draws the
+random samples $r_{i}$, $f_{i}$ $\xleftarrow[]{R}\chi_{\beta}$,
+computes $x_{i} = \textbf{\emph{a}}\cdot r_{i} +
+2\cdot\textbf{\emph{f}}_{i}$ and sends $\{x_{i}\}$ to the responder
+$U_{j}$. After receiving the message $\{x_{i}\}$, the responder
+$U_{j}$ draws the random samples $r_{j}$, $f_{j}$
+$\xleftarrow[]{R}\chi_{\beta}$, computes the message $\{y_{j},
+w_{j}\}$ and sends it to $U_{i}$. Note that no mechanism (i.e.,
+signature \cite{debiao2019}, or message authentication code (MAC)
+\cite{islam2016}) has been adapted by $U_{i}$ and $U_{j}$ to verify
+the integrity of the messages $\{x_{i}\}$ and $\{y_{j}, w_{j}\}$ if
+changed during the communication. Accordingly, the protocol in
+\cite{ZhangJ2015} is vulnerable to the man-in-the-middle attack.
+
+\subsection{Organization}
+\label{L14}The remaining part of this paper is structured as
+follows. Section~\ref{L2} discusses the basics of ideal lattices and
+related hardness problems on it. Section~\ref{L3} proposes an
+adversarial model for an LB-2PAKA protocol. Section~\ref{L4} explain
+our LB-2PAKA protocol. Section~\ref{L5} justifies the correctness
+and security analysis of our LB-2PAKA protocol. Section~\ref{L6}
+analyze the computation and communication costs of our LB-2PAKA
+protocol. Finally, Section~\ref{L7} concludes the paper.
+
+\section{Preliminaries}
+\label{L2} Let $(x^{n}+1)\in\mathbb{Z}[x]$ is an irreducible
+polynomial or prime polynomial over integers, where $n$ signify the
+security parameter, $n = 2^{t}$, for some positive $t\in\mathbb{Z}$.
+Let $\mathbb{Z}[x]$ and $\mathbb{Z}_{q}[x]$ signify the rings of
+polynomials over $\mathbb{Z}$ and $\mathbb{Z}_{q}$, respectively,
+where $q~\mbox{mod}~2n\equiv1$ ($q = 2^{\omega(\mbox{log}_{2}n)}+1$)
+be a public prime modulus. Let $\mathbb{R} = \mathbb{Z}[x]/(x^{n} +
+1)$ be the ring of integer polynomials modulo $(x^{n}+1)$ over
+$\mathbb{Z}$ and $\mathbb{R}_{q} = \mathbb{Z}_{q}[x]/(x^{n} + 1)$ is
+the rings of polynomials modulo $(x^{n}+1)$ and each coefficient is
+reduced modulo $q$ over $\mathbb{Z}_{q}$. The number of element of
+$\mathbb{R}_{q}$ is $q^{n}$ and each element of $\mathbb{R}_{q}$ is
+a polynomial of degree less than $n$ whose coefficients belongs to
+the set $\mathbb{Z}_{q} = \{0, 1, \cdots, q-1\}$
+\cite{LyubashevskyyV2010}.
+
+\begin{lemma}\label{LM1}
+\normalfont Given any $\textbf{\emph{a}},
+\textbf{\emph{b}}\in\mathbb{R}$, we have
+$||\textbf{\emph{a}}\cdot\textbf{\emph{b}}||_{2}\leq\sqrt{n}||\textbf{\emph{a}}||_{2}\cdot||\textbf{\emph{b}}||_{2}$
+and $||\textbf{\emph{a}}\cdot\textbf{\emph{b}}||_{\infty}\leq
+n||\textbf{\emph{a}}||_{\infty}\cdot||\textbf{\emph{b}}||_{\infty}$
+\cite{Saraswathy2017}, where $||\cdot||_{2}$ and
+$||\cdot||_{\infty}$ are the $L_{2}$ norm $L_{\infty}$ norm
+\cite{FengHe2018}.
+\end{lemma}
+
+\begin{lemma}\label{LM2}
+\normalfont Given any fixed positive real number $\beta =
+\omega(\sqrt{\mbox{log}_{2}n})$, we have
+$\mbox{\textbf{Pr}}_{\textbf{\emph{a}}\leftarrow\chi_{\beta}}[||\textbf{\emph{a}}||_{2}>\beta\cdot\sqrt{n}]\leq2^{-n+1}$
+\cite{MicciancioDRO2007}, where $\chi_{\beta}$ signify the
+\emph{discrete Gaussian distribution} over $\mathbb{R}_{q}$. Let $E
+= \{-\left \lfloor{\frac{q}{4}}\right\rfloor, \cdots, \left
+\lfloor{\frac{q}{4}}\right\rfloor\}$ be the middle set of
+$\mathbb{Z}_{q} = \{-\frac{q}{2}, \cdots, \frac{q}{2}\}$. For any
+$x\in\mathbb{Z}_{q}$, the characteristic function \textbf{Cha} is
+described as follows:
+\[\mbox{Cha}(x) =
+  \begin{cases}
+    0~~~x\in E\\
+    1~~~x\notin E
+  \end{cases}
+\]
+The auxiliary modular function
+$\mbox{\textbf{Mod}}_{2}:\mathbb{Z}_{q}\times\{0,1\}\rightarrow\{0,
+1\}$ is described as
+$\mbox{\textbf{Mod}}_{2}(\textbf{\emph{v}},\textbf{\emph{b}}) =
+(\textbf{\emph{v}} +
+\textbf{\emph{b}}\cdot\frac{q-1}{2})~\mbox{mod}~q~\mbox{mod}~2$,
+where $\textbf{\emph{v}}\in\mathbb{Z}_{q}$ and $\textbf{\emph{b}} =
+\mbox{\textbf{Cha}}(\textbf{\emph{v}})$ \cite{ZhangJ2015}.
+\end{lemma}
+
+\begin{lemma}\label{LM3}
+\normalfont Let $q\geq3$ be a odd prime number and $n = 2^{t}$ is
+the security parameter, for some positive $t\in\mathbb{Z}$ and $q =
+2^{\omega(\mbox{log}_{2}n)}+1$. Let
+$\textbf{\emph{v}}\in\mathbb{Z}_{q}$ be selected uniformly at
+random. For any $b\in\{0, 1\}$ and any
+$\textbf{\emph{w}}\in\mathbb{Z}_{q}$, the output distribution of
+$\mbox{\textbf{Mod}}_{2}(\textbf{\emph{v}}+\textbf{\emph{w}}, b)$
+given $\mbox{\textbf{Cha}}(\textbf{\emph{v}}))$ is statistically
+close to uniform on $\{0, 1\}$ \cite{ZhangJ2015}.
+\end{lemma}
+
+\begin{lemma}\label{LM4}
+\normalfont Given a prime number $q\geq3$ and $\textbf{\emph{a}},
+\textbf{\emph{e}}\in\mathbb{R}_{q}$ such that $|e|<\frac{q}{8}$, we
+have $\mbox{\textbf{Mod}}_{2}(\textbf{\emph{a}},
+\mbox{\textbf{Cha}}(\textbf{\emph{a}})) =
+\mbox{\textbf{Mod}}_{2}(\textbf{\emph{w}},
+\mbox{\textbf{Cha}}(\textbf{\emph{a}}))$, where $\textbf{\emph{w}} =
+\textbf{\emph{a}} + 2\cdot\textbf{\emph{e}}$ \cite{ZhangJ2015}.
+\end{lemma}
+
+\noindent The functions \textbf{Cha} and $\mbox{\textbf{Mod}}_{2}$
+can be extended on $\mathbb{R}_{q}$ as follows: Given
+$\textbf{\emph{a}} = a_{0} + a_{1}x + a_{2}x^{2} + \cdots +
+a_{n-1}x^{n-1}\in\mathbb{R}$, we considered it as a vector
+$\textbf{\emph{a}}$ $=$ $(a_{0}$, $a_{1}$, $\cdots$, $a_{n-1})$. For
+$\textbf{\emph{v}}$ $=$ $(v_{0}$, $v_{1}$, $\cdots$,
+$v_{n-1})\in\{0,1\}^{n}$, we have
+$\mbox{\textbf{Cha}}(\textbf{\emph{a}})$ $=$
+$(\mbox{\textbf{Cha}}(a_{0})$, $\mbox{\textbf{Cha}}(a_{1})$,
+$\cdots$, $\mbox{\textbf{Cha}}(a_{n-1}))$ and
+$\mbox{\textbf{Mod}}_{2}(\textbf{\emph{a}}$, $\textbf{\emph{v}})$
+$=$ $(\mbox{\textbf{Mod}}_{2}(a_{0}$, $v_{0})$,
+$\mbox{\textbf{Mod}}_{2}(a_{1}$, $v_{1})$, $\cdots$,
+$\mbox{\textbf{Mod}}_{2}(a_{n-1}$, $v_{n-1}))$ \cite{ZhangJ2015}.
+
+\begin{mydef}[Ring Learning with Errors (RLWE)]
+\normalfont Let $\textbf{\emph{s}}\in\mathbb{R}_{q}$ and
+$\textbf{\emph{A}}_{\textbf{\emph{s}}, \chi_{\beta}}$ be the
+distribution over $(\textbf{\emph{a}},
+\textbf{\emph{a}}\cdot\textbf{\emph{s}} +
+2\cdot\textbf{\emph{e}})\in\mathbb{R}_{q}\times\mathbb{R}_{q}$,
+where $\textbf{\emph{a}}$ is randomly selected from $\mathbb{R}_{q}$
+and $\textbf{\emph{e}}\xleftarrow[]{R}\chi_{\beta}$. It is
+computationally infeasible for a probabilistic polynomial
+time-bounded (PPT) algorithm $\mathcal{B}$ to distinguish the
+distribution $\textbf{\emph{A}}_{\textbf{\emph{s}}, \chi_{\beta}}$
+from the uniform distribution on
+$\mathbb{R}_{q}\times\mathbb{R}_{q}$, for given a fixed
+$\textbf{\emph{a}}$ sampled from $\chi_{\beta}$ and polynomially
+many samples \cite{LyubashevskyyV2010}.
+\end{mydef}
+
+\begin{mydef}[Pairing with errors (PWE)]
+\normalfont Let $\textbf{\emph{x}},
+\textbf{\emph{s}}\in\mathbb{R}_{q}$, we describe
+$\psi(\textbf{\emph{x}}, \textbf{\emph{s}}) =
+\mbox{\textbf{Mod}}_{2}(\textbf{\emph{x}}\cdot\textbf{\emph{s}},
+\mbox{\textbf{Cha}}(\textbf{\emph{x}}\cdot\textbf{\emph{s}}))$. For
+given $\textbf{\emph{a}}, \textbf{\emph{x}},
+\textbf{\emph{y}}\in\mathbb{R}_{q}$, it is computationally
+infeasible for any $\mathcal{B}$ to compute $\psi(\textbf{\emph{x}},
+\textbf{\emph{s}})$, where $\textbf{\emph{y}} =
+\textbf{\emph{a}}\cdot\textbf{\emph{s}} + 2\cdot\textbf{\emph{e}}$
+for the unknowns $\textbf{\emph{s}},
+\textbf{\emph{e}}\xleftarrow[]{R}\chi_{\beta}$.
+\end{mydef}
+
+
+\begin{mydef}[Decision pairing with errors (DPWE)]
+\normalfont Given $\textbf{\emph{a}}$, $\textbf{\emph{x}}$,
+$\textbf{\emph{y}}\in\mathbb{R}_{q}$ and $\omega,
+\sigma\in\{0,1\}^{*}$, where $\omega =
+\mbox{\textbf{Cha}}(\textbf{\emph{k}})$ for
+$\textbf{\emph{x}}\in\mathbb{R}_{q}$ and $\sigma =
+\mbox{\textbf{Mod}}_{2}(\textbf{\emph{k}}, \omega)$. It is
+computationally infeasible for any $\mathcal{B}$ to determine
+whether $\textbf{\emph{k}} = \textbf{\emph{x}}\cdot\textbf{\emph{s}}
++ 2\cdot\textbf{\emph{g}}$ and $\textbf{\emph{y}} =
+\textbf{\emph{a}}\cdot\textbf{\emph{s}} + 2\cdot\textbf{\emph{e}}$
+for the unknowns $\textbf{\emph{s}}, \textbf{\emph{g}},
+\textbf{\emph{e}}\in \chi_{\beta}$ or $(\textbf{\emph{k}},
+\textbf{\emph{y}})$ is uniformly random in
+$\mathbb{R}_{q}\times\mathbb{R}_{q}$.
+\end{mydef}
+
+\section{Adversary Model}
+\label{L3}Here, we explain the formal adversarial model of an
+LB-2PAKA protocol based on the computational model called the random
+oracle model (ROM), which was introduced in \cite{Bellare1993}. This
+model tests the semantic security of the session key and the mutual
+authentication between two users. In our adversarial model, we
+assume that $\mathbb{U} = \{U_{1}, U_{2}, \cdots, U_{n}\}$ be a set
+of $n$ users and any two distinct users from $\mathbb{U}$ can
+cooperatively execute the proposed LB-2PAKA protocol. The set
+$\mathbb{U}$ includes both honest users and dishonest users. The
+dishonest user may be a malicious insider user or an outsider user.
+We assume that each $U_{i}$ ($1\leq i\leq n$) must have their
+long-term static private and public keys $\langle(s_{i}$, $e_{i}$),
+$p_{i}\rangle$ and issued the public key certificate for the public
+key $p_{i}$ from a trusted certificate authority (CA). The proposed
+LB- 2PAKA protocol can be viewed as a collection of $n$ programs,
+which are cooperatively executed by different $n$ pairs of users. An
+instance of the protocol among two different users is considered as
+a session, and each user may execute multiple sessions
+simultaneously with different users. The communication in every
+session is assumed to be fully monitored by an adversary
+$\mathcal{A}$, who can modify, insert, or delete the messages
+exchanges between two users.
+
+We denote the oracle $\Pi^{k}_{U_i,U_j}$ is the $k$th instance of
+the user $U_{i}$ involved with its partner $U_{j}$ in a session $k$.
+The session identifier $sid^{k}_{U_i,U_j}$ is considered as the
+concatenation of the messages exchanged among $U_{i}$ with identity
+$id_{i}$ and $U_{j}$ with identity $id_{j}$. The partner identifier
+$pid^{k}_{U_i,U_j}$ of $\Pi^{k}_{U_i,U_j}$ is a set containing the
+identity $id_{i}$ of $U_{i}$ and the identity $id_{j}$ of the party
+$U_{j}$ with whom $U_{i}$ wants to establish a session. The semantic
+security of the session key and mutual authentication between the
+involved users in a session of LB-2PAKA protocol is defined by a
+series of challenge-response games, which were executed by a
+challenger $\mathcal{C}$ and an adversary $\mathcal{A}$. In each
+game, $\mathcal{A}$ must solve a challenge on a \emph{\textbf{Test}}
+session to violate the semantic security and mutual authentication
+of LB-2PAKA protocol. In each game, $\mathcal{A}$ has given the
+capability to execute the following queries to $\mathcal{C}$, which
+in turn, returns the answer of the corresponding queries to
+$\mathcal{A}$:
+
+\begin{itemize}
+\item\textbf{Execute($\Pi^{k}_{U_i,U_j}$):}~$\mathcal{A}$
+can ask an \textbf{Execute($\Pi^{k}_{U_i,U_j}$)} query to
+$\mathcal{C}$ to get the messages computed as per the description of
+the protocol among the instances $\Pi^{k}_{U_i}$ and
+$\Pi^{k}_{U_j}$.
+
+\item \textbf{Send($\Pi^{k}_{P}$, $m$):}~$\mathcal{A}$ can ask a
+\textbf{Send($\Pi^{k}_{P}$, $m$)} query to acquire the messages
+spawned by the instance $\Pi^{k}_{P}$. Note that $\mathcal{A}$ can
+also commence the protocol by executing a
+\textbf{\mbox{Send}($\Pi^{k}_{P}$, \emph{start})} query to
+$\mathcal{C}$.
+
+\item \textbf{Corrupt($P$):}~This query models an insider attack
+and an unknown key share attack. To compromise an entity
+$P\in\mathbb{U}$ and to acquire the long-term private key of $P$,
+$\mathcal{A}$ can ask a \textbf{Corrupt($P$)} query to $\mathcal{C}$
+and then $\mathcal{C}$ will return the long-term private key of $P$
+to $\mathcal{A}$.
+
+\item \textbf{Reveal($\Pi^{k}_{U_{i},U_{j}}$):}~The execution of this query
+models an active attack, called known-key attack. With a
+\textbf{Reveal($\Pi^{k}_{U_{i},U_{j}}$)}, $\mathcal{A}$ obtains the
+session key $SK$ for misusing it. Assume that $SK$ is freshly
+computed in the $k$th session among the instances $\Pi^{k}_{U_{i}}$
+and $\Pi^{k}_{U_{j}}$, and $\Pi^{k}_{U_{i}}$ and it's partner
+$\Pi^{k}_{U_{j}}$ enter in to the \emph{accepted} state in the
+session $k$. Suppose $\mathcal{A}$ sends a
+\textbf{Reveal($\Pi^{k}_{U_{i},U_{j}}$)} query to $\mathcal{C}$,
+then $\mathcal{C}$ returns the answers as follows:
+
+\begin{itemize}
+\item $\mathcal{C}$ returns the session key $SK$ to $\mathcal{A}$,
+provided $\Pi^{k}_{U_i}$ and it's partner $\Pi^{k}_{U_j}$ are in
+\emph{accepted} state and they freshly compute a correct session key
+$SK$.
+
+\item Otherwise, $\mathcal{C}$ returns \emph{null} value to $\mathcal{A}$ as output.
+\end{itemize}
+
+\item \textbf{RevealEph($\Pi^{k}_{U_i,U_j}$):}~To obtain the
+ephemeral secrets used by the participants $U_i$ and $U_j$ in a
+session $k$, $\mathcal{A}$ can ask a
+\textbf{RevealEph($\Pi^{k}_{U_i,U_j}$)} query to $\mathcal{C}$, then
+$\mathcal{C}$ returns the ephemeral secrets used in the session $k$.
+This query models the goal of the ephemeral secret leakage attack.
+
+\item \textbf{Test($\Pi^{k}_{U_{i},U_{j}}$):}~This query evaluates
+the semantic security of $SK$. $\mathcal{A}$ is allowed to send only
+a single \textbf{Test($\Pi^{k}_{U_{i},U_{j}}$)} query to
+$\mathcal{C}$ for each session $k$. In response to a
+\textbf{Test($\Pi^{k}_{U_{i},U_{j}}$)} query, $\mathcal{C}$ returns
+$SK$ if it is computed between $\Pi^{k}_{U_i}$ and its partner
+$\Pi^{k}_{U_j}$, else, returns a \emph{null value}. When
+$\mathcal{A}$ simulates a \textbf{Test($\Pi^{k}_{U_{i},U_{j}}$)}
+query, $\mathcal{C}$ flips an unbiased coin $b$ and outputs $SK$ as
+answer if $b = 1$ holds, else, chooses a \emph{random value} from
+$\{0,1\}^{l}$ as answer for the
+\textbf{Test($\Pi^{k}_{U_{i},U_{j}}$)} query asked by $\mathcal{A}$.
+\end{itemize}
+
+\begin{mydef}[Accepted state]
+\label{D7} \normalfont An oracle $\Pi^{k}_{U_i,U_j}$ is called
+\emph{accepted} if (i) the instances $\Pi^{k}_{U_i}$ and
+$\Pi^{k}_{U_j}$ are mutually authenticate each other in a fresh
+session $k$ and holds the same session key $SK$, (ii)
+$\Pi^{k}_{U_i}$ and $\Pi^{k}_{U_j}$ hold a session identifier
+$sid^{k}_{U_i,U_j}$, and (3) $\Pi^{k}_{U_i}$ and $\Pi^{k}_{U_j}$
+hold a partner identifier $pid^{k}_{U_i,U_j}$.
+\end{mydef}
+
+\begin{mydef}[Partner]
+\label{D8} \normalfont Two oracles $\Pi^{k}_{U_i,U_j}$ and
+$\Pi^{l}_{U_j,U_i}$ are said to be \emph{partnered} \emph{iff} the
+following holds: (1) $\Pi^{k}_{U_i,U_j}$ and $\Pi^{l}_{U_j,U_i}$
+entered into \emph{accepted} state, (ii) $sid^{k}_{U_i,U_j} =
+sid^{l}_{U_j,U_i}$, and (ii) $pid^{k}_{U_i,U_j} =
+pid^{l}_{U_j,U_i}$.
+\end{mydef}
+
+\begin{mydef}[Freshness of a session]
+\label{D9} \normalfont An instance $\Pi^{k}_{U_i,U_j}$ is
+\emph{fresh} if the following holds: (i) $\Pi^{k}_{U_i,U_j}$ is in
+the \emph{accepted} state, (ii) No
+\textbf{Reveal($\Pi^{k}_{U_i,U_j}$)} query should be executed, (iii)
+No \textbf{Send($\Pi^{k}_{U_i}$, $m$)} or
+\textbf{Send($\Pi^{k}_{U_j}$, $m$)} query should be executed, (iv)
+Only \textbf{Corrupt}($U_i$) or \textbf{Corrupt}($U_j$) can be
+executed.
+\end{mydef}
+
+
+\begin{mydef}[Session key secrecy]
+\label{D9} \normalfont An LB-2AKA protocol satisfy the session key
+secrecy, if no polynomial time bounded adversary $\mathcal{A}$ has a
+non-negligible advantage in the following game played between
+$\mathcal{A}$ and infinite set of oracles $\Pi^{k}_{U_i,U_j}$: (i) A
+long-term private key is assigned to each user $U_{i}\in\mathbb{U}$,
+(ii) $\mathcal{A}$ may ask several queries and get back the response
+from the corresponding oracles, (iii) There is no
+\textbf{Reveal($\Pi^{k}_{U_i,U_j}$)} query or
+\textbf{Corrupt($U_{i}$)}/\textbf{Corrupt($U_{j}$)} query being
+asked before the \textbf{Test($\Pi^{k}_{U_i,U_j}$)} query has been
+asked, and (iv) $\mathcal{A}$ may ask other queries during asking
+the \textbf{Test($\Pi^{k}_{U_i,U_j}$)} query where
+$\Pi^{k}_{U_i,U_j}$ is fresh. $\mathcal{A}$ outputs its guess bit
+$b^{\prime}$ for the bit $b$, which is chosen in the
+\textbf{Test($\Pi^{k}_{U_i,U_j}$)} query eventually and the game is
+successfully terminated.
+\end{mydef}
+
+\begin{mydef}[Probability of success]
+\label{D10} \normalfont Let $Succ(\mathcal{A})$ be the event that
+$\mathcal{A}$ makes a single  \textbf{Test($\Pi^{k}_{U_i,U_j}$)}
+query to some fresh session $k$ to the instance $\Pi^{k}_{U_i,U_j}$
+that has end successfully, and eventually returns a guess bit
+$b^{\prime}$, where $b^{\prime} = b$, the bit $b$ was selected in
+the \emph{\textbf{Test}} query. The advantage, i.e., probability of
+success of $\mathcal{A}$ with in the polynomial time bound $t$ in
+violating the semantic security of the session key of our LB-2PAKA
+protocol is defined as $Adv^{LB-2PAKA}_{\mathcal{A}}(t) =
+|Pr[Succ(\mathcal{A})]- \frac{1}{2}|$.
+\end{mydef}
+
+\begin{mydef}[Semantic security]
+\label{D11} \normalfont The proposed LB-2PAKA protocol is
+semantically secure if (i) in the presence of $\mathcal{A}$,
+$\Pi^{k}_{U_i}$ and its partner $\Pi^{k}_{U_j}$ are in
+\emph{accepted} state, and (ii) $Adv^{LB-2PAKA}_{\mathcal{A}}(t)$ is
+negligible.
+\end{mydef}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}[h]
+\centering \caption{Notations} \label{tab1} \scalebox{1}{
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Notation}    & \textbf{Meaning}\\
+\hline
+$q$                  & Odd prime number\\
+\hline
+$\chi_{\beta}$       & Discrete Gaussian distribution for $\beta>0$\\
+\hline
+$\textbf{\emph{x}}\xleftarrow[]{R}\chi_{\beta}$ & $\textbf{\emph{x}}$ is sampled from $\mathbb{R}_{q}$ uniformly at random according to $\chi_{\beta}$\\
+\hline
+$\mathbb{R}$, $\mathbb{R}_{q}$   & Ring, where $\mathbb{R} = \mathbb{Z}[x]/(x^{n} + 1)$ and $\mathbb{R}_{q} = \mathbb{Z}_{q}[x]/(x^{n} + 1)$\\
+\hline
+SA                   & System administrator\\
+\hline
+CA                   & Certificate authority\\
+\hline
+$U_{i}$/$U_{j}$      & Initiator (User)/Responder (User)\\
+\hline
+$id_{i}$             & Identity of $U_{i}$\\
+\hline
+($s_{i}$, $e_{i}$)  & long-term static private key of $U_{i}$\\
+\hline
+$p_{i}$             & Long-term static public key of $U_{i}$, $p_{i} = \textbf{\emph{a}}\cdot s_{i} + 2\cdot\textbf{\emph{e}}_{i}$\\
+\hline
+$H_{j}(\cdot)$      & Cryptographic hash functions, $H_{j}:\{0, 1\}^{*}\rightarrow\{0,1\}^{l}$, $j = 1,2,3$\\
+\hline
+\end{tabular}}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Proposed LB-2PAKA Protocol}
+\label{L4}Here, we propose a new LB-2PAKA protocol in which three
+entities are involved: i) the initiator $U_{i}$, ii) the responder
+$U_{j}$, and iii) the system administrator (SA). The role of SA is
+to generate all the system parameters. The systems parameters are
+essential to perform the execution of the proposed protocol.
+Table~\ref{tab1} lists the different notations and their meanings.
+In our LB-2PAKA protocol, both the users $U_{i}$ and $U_{j}$
+generate their pair of keys: a static long-term private key and a
+corresponding static long-term public key. The static long-term
+public keys of $U_{i}$ and $U_{j}$ must be authenticated by a
+certificate authority (CA) before using them. We describe our
+LB-2PAKA protocol with the following phases.
+
+\subsection{Initialization Phase}\label{L41}
+This phase is executed by the SA to generate the system parameters.
+SA selects a sufficiently large odd prime
+$q>16\beta^{2}n^{\frac{3}{2}}$ such that $q~\mbox{mod}~2n\equiv1$,
+where $n\in\mathbb{Z}_{q}$, $n = 2^{t}$ for some positive
+$t\in\mathbb{Z}$. SA further selects $\mathbb{R} =
+\mathbb{Z}[x]/(x^{n} + 1)$, $\mathbb{R}_{q} =
+\mathbb{Z}_{q}[x]/(x^{n} + 1)$, a discrete Gaussian distribution
+$\chi_{\beta}$, a fixed element $\textbf{\emph{a}}$ uniformly at
+random from $\mathbb{R}_{q}$ and  three one-way secure hash
+functions $H_{1}$, $H_{2}$,
+$H_{3}:\{0,1\}^{*}\rightarrow\{0,1\}^{l}$. In our protocol, we
+choose the SHA-512 hash function for hashing. SA publishes $\langle
+n$, $q$, $\chi_{\beta}$, $H_{1}(\cdot)$, $H_{2}(\cdot)$,
+$H_{3}(\cdot)\rangle$ as system parameters.
+
+\subsection{Key Generation Phase}\label{L42}
+User $U_{i}$ with an identity $id_{i}$ generates his/her long-term
+static secret key as $(s_{i}$, $e_{i})$
+$\xleftarrow[]{R}\chi_{\beta}$ and computes his/her static long-term
+public key as $p_{i} = \textbf{\emph{a}}\cdot s_{i} +
+2\cdot\textbf{\emph{e}}_{i}\in\mathbb{R}_{q}$.
+
+\subsection{Authenticated Key Agreement Phase}\label{L42}
+\noindent\textbf{(a)}~The initiator $U_{i}$ draws two samples
+$r_{i}$, $f_{i}$ $\xleftarrow[]{R}\chi_{\beta}$ and computes the
+followings:
+\begin{itemize}
+\item[]$x_{i} = \textbf{\emph{a}}\cdot r_{i} + 2\cdot\textbf{\emph{f}}_{i}$
+\item[]$t_{i_1} = s_{i}\cdot p_{j}$
+\item[]$w_{i_1} = \mbox{\textbf{Cha}}(t_{i_1})$
+\item[]$\sigma_{i_1} = \mbox{\textbf{Mod}}_{2}(t_{i_1}, w_{i_1})$
+\item[]$\alpha_{i_1} = H_{1}(id_{i}, x_{i}, \sigma_{i_1})$
+\end{itemize}
+\noindent $U_{i}$ sends the message $\langle id_{i}$, $x_{i}$,
+$w_{i_1}$, $\alpha_{i_1}\rangle$ to the responder $U_{j}$.\\
+\noindent \textbf{(b)}~After receiving the message $\langle id_{i}$,
+$x_{i}$, $w_{i_1}$, $\alpha_{i_1}\rangle$ from $U_{i}$, the
+responder $U_{j}$ draws two samples $r_{j}$,
+$f_{j}$$\xleftarrow[]{R}\chi_{\beta}$ and computes the followings:
+\begin{itemize}
+\item[]$x_{j} = \textbf{\emph{a}}\cdot r_{j} + 2\cdot\textbf{\emph{f}}_{j}$
+\item[]$t_{j_1} = s_{j}\cdot p_{i}$
+\item[]$w_{j_1} = \mbox{\textbf{Cha}}(t_{j_1})$
+\item[]$\sigma_{j_1} = \mbox{\textbf{Mod}}_{2}(t_{j_1}, w_{j_1})$
+\item[]$\alpha_{j_1} = H_{1}(id_{j}, x_{j}, \sigma_{j_1})$
+\end{itemize}
+\noindent $U_{j}$ sends the message $\langle id_{j}$, $x_{j}$,
+$w_{j_1}$, $\alpha_{j_1}\rangle$ to $U_{i}$.\\
+\noindent\textbf{(c)}~After receiving the message $\langle id_{j}$,
+$x_{j}$, $w_{j_1}$, $\alpha_{j_1}\rangle$ from $U_{j}$, $U_{i}$
+further computes the followings:
+\begin{itemize}
+\item[]$\sigma_{j_1}^{\prime} = \mbox{\textbf{Mod}}_{2}(t_{i_1}, w_{j_1})$
+\item[]$\alpha_{j_1}^{\prime} = H_{1}(id_{j}, x_{j}, \sigma_{j_1}^{\prime})$
+\end{itemize}
+\noindent If $\alpha_{j_1}^{\prime} = \alpha_{j_1}$, $U_{i}$
+confirms that the message $\langle id_{j}$, $x_{j}$, $w_{j_1}$,
+$\alpha_{j_1}\rangle$ is correctly received from $U_{j}$. User
+$U_{i}$ further computes the followings:
+\begin{itemize}
+\item[]$t_{i_2} = r_{i}\cdot x_{j}$
+\item[]$w_{i_2} = \mbox{\textbf{Cha}}(t_{i_2})$
+\item[]$\sigma_{i_2} = \mbox{\textbf{Mod}}_{2}(t_{i_2}, w_{i_2})$
+\item[]$\alpha_{i_2} = H_{2}(id_{i}, x_{i}, x_{j}, \sigma_{i_2})$
+\end{itemize}
+\noindent $U_{i}$ sends the message $\langle id_{i}$, $w_{i_2}$,
+$\alpha_{i_2}\rangle$ to $U_{j}$.\\
+\noindent\textbf{(d)}~After receiving the message $\langle id_{i}$,
+$w_{i_2}$, $\alpha_{i_2}\rangle$ from $U_{i}$, $U_{j}$ computes
+\begin{itemize}
+\item[]$\sigma_{i_1}^{\prime} = \mbox{\textbf{Mod}}_{2}(t_{j_1}$, $w_{i_1})$
+\item[]$\alpha_{i_1}^{\prime} = H_{2}(id_{i}, x_{i}, \sigma_{i_1}^{\prime})$
+\end{itemize}
+\noindent If $\alpha_{i_1}^{\prime} = \alpha_{i_1}$, $U_{j}$
+confirms that the message $\langle id_{i}$, $x_{i}$, $w_{i_1}$,
+$\alpha_{i_1}\rangle$ is correctly received from $U_{i}$. $U_{j}$
+further computes the followings:
+\begin{itemize}
+\item[]$t_{j_2} = r_{j}\cdot x_{i}$
+\item[]$w_{j_2} = \mbox{\textbf{Cha}}(t_{j_2})$
+\item[]$\sigma_{j_2} = \mbox{\textbf{Mod}}_{2}(t_{j_2}, w_{j_2})$
+\item[]$\alpha_{j_2} = H_{2}(id_{j}, x_{j}, x_{i}, \sigma_{j_2})$
+\end{itemize}
+\noindent $U_{j}$ sends the message $\langle id_{j}$, $w_{j_2}$,
+$\alpha_{j_2}\rangle$ to $U_{i}$. \\
+\noindent After receiving the message $\langle id_{j}$, $w_{j_2}$,
+$\alpha_{j_2}\rangle$ from $U_{j}$, $U_{i}$ computes
+\begin{itemize}
+\item[]$\sigma_{j_2}^{\prime} = \mbox{\textbf{Mod}}_{2}(t_{i_2}, w_{j_2})$
+\item[]$\alpha_{j_2}^{\prime} = H_{2}(id_{j}, x_{j}, x_{i}, \sigma_{j_2}^{\prime})$
+\end{itemize}
+\noindent If $\alpha_{j_2}^{\prime} = \alpha_{j_2}$, then $U_{i}$
+computes the session identifier as $sid = (id_{i}$, $id_{j}$,
+$x_{i}$, $x_{j}$, $w_{i_1}$, $w_{j_1}$, $\alpha_{i_1}$,
+$\alpha_{j_1})$ and the session key as $SK = H_{3}(sid$,
+$\sigma_{i_1}$, $\sigma_{i_2}$, $\sigma_{j_1}^{\prime}$,
+$\sigma_{j_2}^{\prime})$.\\
+\noindent After receiving the message $\langle id_{i}$, $w_{i_2}$,
+$\alpha_{i_2}\rangle$ from $U_{i}$, $U_{j}$ computes
+\begin{itemize}
+\item[] $\sigma_{i_2}^{\prime} = \mbox{\textbf{Mod}}_{2}(t_{j_2}, w_{i_2})$
+\item[] $\alpha_{i_2}^{\prime} = H_{2}(id_{i}, x_{i}, x_{j}, \sigma_{i_2}^{\prime})$
+\end{itemize}
+\noindent If $\alpha_{i_2}^{\prime} = \alpha_{i_2}$, then $U_{j}$
+computes the session identifier as $sid = (id_{i}$, $id_{j}$,
+$x_{i}$, $x_{j}$, $w_{i_1}$, $w_{j_1}$, $\alpha_{i_1}$,
+$\alpha_{j_1})$ and the session key as $SK = H_{3}(sid$,
+$\sigma_{i_1}^{\prime}$, $\sigma_{i_2}^{\prime}$, $\sigma_{j_1}$,
+$\sigma_{j_2})$.
+
+The key agreement phase of our LB-2PAKA protocol is illustrated in
+the Figure~\ref{F1}.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure*}[t]
+\centering \scalebox{0.85} {
+\begin{tabular}{|l l l|}
+\hline
+~~~~~\textbf{User~$U_{i}$ (Initiator)}                                                                                                          &~~Open network         &~~~~~~~~~~\textbf{User~$U_{j}$ (Responder)}  \\
+\hline
+Sample $r_{i}$, $f_{i}$ $\xleftarrow[]{R}\chi_{\beta}$                                                                          &         & Sample $r_{j}$, $f_{j}$ $\xleftarrow[]{R}\chi_{\beta}$   \\
+
+Compute $x_{i} = \textbf{\emph{a}}\cdot r_{i} + 2\cdot\textbf{\emph{f}}_{i}$, $t_{i_1} = s_{i}\cdot p_{j}$                      &         & Compute $x_{j} = \textbf{\emph{a}}\cdot r_{j} + 2\cdot\textbf{\emph{f}}_{j}$, $t_{j_1} = s_{j}\cdot p_{i}$ \\
+Compute $w_{i_1} = \mbox{\textbf{Cha}}(t_{i_1})$, $\sigma_{i_1} = \mbox{\textbf{Mod}}_{2}(t_{i_1}, w_{i_1})$                    &         & Compute $w_{j_1} = \mbox{\textbf{Cha}}(t_{j_1})$, $\sigma_{j_1} = \mbox{\textbf{Mod}}_{2}(t_{j_1}, w_{j_1})$   \\
+Compute $\alpha_{i_1} = H_{1}(id_{i}, x_{i}, \sigma_{i_1})$                                                                     &         & Compute $\alpha_{j_1} = H_{1}(id_{j}, x_{j}, \sigma_{j_1})$ \\
+                         & $\underrightarrow{~~\langle id_{i}, x_{i}, w_{i_1}, \alpha_{i_1}\rangle~~}$ &   \\
+                         & $\underleftarrow{~~\langle id_{j}, x_{j}, w_{j_1}, \alpha_{j_1}\rangle~~}$ &   \\
+Compute $\sigma_{j_1}^{\prime} = \mbox{\textbf{Mod}}_{2}(t_{i_1}, w_{j_1})$, $\alpha_{j_1}^{\prime} = H_{1}(id_{j}, x_{j}, \sigma_{j_1}^{\prime})$  &         & Compute $\sigma_{i_1}^{\prime} = \mbox{\textbf{Mod}}_{2}(t_{j_1}, w_{i_1})$, $\alpha_{i_1}^{\prime} = H_{1}(id_{i}, x_{i}, \sigma_{i_1}^{\prime})$ \\
+If $\alpha_{j_1}^{\prime}\neq \alpha_{j_1}$, abort                                                                               &         & If $\alpha_{i_1}^{\prime}\neq \alpha_{i_1}$, abort  \\
+Else, compute $t_{i_2} = r_{i}\cdot x_{j}$, $w_{i_2} = \mbox{\textbf{Cha}}(t_{i_2})$                                             &         & Else, compute $t_{j_2} = r_{j}\cdot x_{i}$, $w_{j_2} = \mbox{\textbf{Cha}}(t_{j_2})$ \\
+Compute $\sigma_{i_2} = \mbox{\textbf{Mod}}_{2}(t_{i_2}, w_{i_2})$, $\alpha_{i_2} = H_{2}(id_{i}, x_{i}, x_{j}, \sigma_{i_2})$   &         & Compute $\sigma_{j_2} = \mbox{\textbf{Mod}}_{2}(t_{j_2}, w_{j_2})$, $\alpha_{j_2} = H_{2}(id_{j}, x_{j}, x_{i}, \sigma_{j_2})$\\
+                         & $\underrightarrow{~~\langle id_{i}, w_{i_2}, \alpha_{i_2}\rangle~~}$ &   \\
+                         & $\underleftarrow{~~\langle id_{j}, w_{j_2}, \alpha_{j_2}\rangle~~}$ &   \\
+Compute $\sigma_{j_2}^{\prime} = \mbox{\textbf{Mod}}_{2}(t_{i_2}, w_{j_2})$, $\alpha_{j_2}^{\prime} = H_{2}(id_{j}, x_{j}, x_{i}, \sigma_{j_2}^{\prime})$  &         & Compute $\sigma_{i_2}^{\prime} = \mbox{\textbf{Mod}}_{2}(t_{j_2}, w_{i_2})$, $\alpha_{i_2}^{\prime} = H_{2}(id_{i}, x_{i}, x_{j}, \sigma_{i_2}^{\prime})$ \\
+If $\alpha_{j_2}^{\prime}\neq \alpha_{j_2}$, abort                                                                      &         & If $\alpha_{i_2}^{\prime}\neq \alpha_{i_2}$, abort\\
+Else, compute $sid = (id_{i}$, $id_{j}$, $x_{i}$, $x_{j}$, $w_{i_1}$, $w_{j_1}$, $\alpha_{i_1}$, $\alpha_{j_1})$        &         & Else, compute $sid = (id_{i}$, $id_{j}$, $x_{i}$, $x_{j}$, $w_{i_1}$, $w_{j_1}$, $\alpha_{i_1}$, $\alpha_{j_1})$\\
+Compute session key $SK = H_{3}(sid$, $\sigma_{i_1}$, $\sigma_{i_2}$, $\sigma_{j_1}^{\prime}$, $\sigma_{j_2}^{\prime})$ &         & Compute session key $SK = H_{3}(sid$, $\sigma_{i_1}^{\prime}$, $\sigma_{i_2}^{\prime}$, $\sigma_{j_1}$, $\sigma_{j_2})$\\
+\hline
+\end{tabular}}
+\vspace{0.3cm} \caption{Authenticated key agreement phase}
+\label{F1}
+\end{figure*}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\section{Security Analysis}
+\label{L5}
+\subsection{Correctness}
+\begin{theorem}
+\label{Th1} \normalfont Let $q>16\beta^{2}n^{\frac{3}{2}}$ be an odd
+prime number. Let $U_{i}$ and $U_{j}$ follow the proposed LB-2PAKA
+protocol, then $U_{i}$ and $U_{j}$ will successfully end with a
+common session key $SK = H_{3}(sid$, $\sigma_{i_1}$, $\sigma_{i_2}$,
+$\sigma_{j_1}$, $\sigma_{j_2})$.
+\end{theorem}
+
+\begin{proof}
+\normalfont In the authenticated key agreement phase of our LB-2PAKA
+protocol, user $U_{i}$ justifies the legitimacy of $U_{j}$ by
+verifying whether $\alpha_{j_1}^{\prime} = \alpha_{j_1}$ and
+$\alpha_{j_2}^{\prime} = \alpha_{j_2}$. Since:
+\begin{eqnarray}
+\label{Gx1} t_{i_1} = s_{i}\cdot p_{j} = a\cdot s_{i}\cdot s_{j} +
+2\cdot s_{i}\cdot e_{j}
+\end{eqnarray}
+\begin{eqnarray}
+\label{Gx2} t_{j_1} = s_{j}\cdot p_{i} = a\cdot s_{i}\cdot s_{j} +
+2\cdot s_{j}\cdot e_{i}
+\end{eqnarray}
+Subtracting the Eq.~(\ref{Gx2}) from the Eq.~(\ref{Gx1}), we get:
+\begin{eqnarray}
+\label{Gx3} t_{i_1} - t_{j_1} = 2\cdot s_{i}\cdot e_{j} - 2\cdot s_{j}\cdot e_{i}
+\end{eqnarray}
+
+Based on the Lemma~\ref{LM1} and Lemma~\ref{LM2}, we have:
+\begin{eqnarray}
+\label{Gx4} ||s_{i}\cdot e_{j} - s_{j}\cdot e_{i}||_{2} \nonumber
+&\leq& ||s_{i}\cdot e_{j}||_{2} + ||s_{j}\cdot e_{i}||_{2} \nonumber \\
+&<& \sqrt{n}\cdot||s_{i}||_{2}\cdot||e_{j}||_{2} + \sqrt{n}\cdot||s_{j}||_{2}\cdot||e_{i}||_{2} \nonumber \\
+&<& \sqrt{n}\cdot\beta\cdot\sqrt{n}\cdot\beta\cdot\sqrt{n} + \sqrt{n}\cdot\beta\cdot\sqrt{n}\cdot\beta\cdot\sqrt{n} \nonumber \\
+&=& 2\cdot\beta^{2}\cdot n^{\frac{3}{2}} \nonumber \\
+&<& \frac{q}{8}~~[\mbox{Since}~q>16\beta^{2}n^{\frac{3}{2}}]
+\end{eqnarray}
+
+Hence, from the Lemma~\ref{LM3} and Eq.~(\ref{Gx4}), we get:
+\begin{eqnarray}
+\label{Gx5}
+\sigma_{j_1}^{\prime}\nonumber
+&=& \mbox{\textbf{Mod}}_{2}(t_{i_1}, w_{j_1}) \nonumber \\
+&=& \mbox{\textbf{Mod}}_{2}(t_{i_1}, \mbox{\textbf{Cha}}(t_{j_1})) \nonumber \\
+&=& \mbox{\textbf{Mod}}_{2}(t_{j_1}, \mbox{\textbf{Cha}}(t_{j_1})) \nonumber \\
+&=& \sigma_{j_1}
+\end{eqnarray}
+Thus, according to the Eq.~(\ref{Gx5}), we also get:
+\begin{eqnarray}
+\label{Gx6}
+\alpha_{j_1}^{\prime} \nonumber
+&=& H_{1}(id_{j}, x_{j}, \sigma_{j_1}^{\prime}) \nonumber \\
+&=& H_{1}(id_{j}, x_{j}, \sigma_{j_1}) \nonumber \\
+&=& \alpha_{j_1}
+\end{eqnarray}
+Again, we have:
+\begin{eqnarray}
+\label{Gx7} t_{i_2} = x_{i}\cdot x_{j} = a\cdot r_{i}\cdot r_{j} +
+2\cdot r_{i}\cdot f_{j}
+\end{eqnarray}
+\begin{eqnarray}
+\label{Gx8} t_{j_2} = x_{j}\cdot x_{i} = a\cdot r_{i}\cdot r_{j} +
+2\cdot x_{j}\cdot f_{i}
+\end{eqnarray}
+Subtracting the Eq.~(\ref{Gx8}) from the Eq.~(\ref{Gx7}), we get:
+\begin{eqnarray}
+\label{Gx9} t_{i_2} - t_{j_2} = 2\cdot r_{i}\cdot f_{j} - 2\cdot
+r_{j}\cdot f_{i}
+\end{eqnarray}
+
+From the Lemma~\ref{LM1} and Lemma~\ref{LM2}, we get:
+\begin{eqnarray}
+\label{Gx9} ||r_{i}\cdot f_{j} - r_{j}\cdot f_{i}||_{2} <
+\frac{q}{8}
+\end{eqnarray}
+
+Hence, from the Lemma~\ref{LM3} and Eq.~(\ref{Gx9}), we have:
+\begin{eqnarray}
+\label{Gx10}
+\sigma_{j_2}^{\prime}\nonumber
+&=& \mbox{\textbf{Mod}}_{2}(t_{i_2}, w_{j_2}) \nonumber \\
+&=& \mbox{\textbf{Mod}}_{2}(t_{i_2}, \mbox{\textbf{Cha}}(t_{j_2})) \nonumber \\
+&=& \mbox{\textbf{Mod}}_{2}(t_{j_2}, \mbox{\textbf{Cha}}(t_{j_2})) \nonumber \\
+&=& \sigma_{j_2}
+\end{eqnarray}
+Thus, according to the Eq.~(\ref{Gx10}), we also get:
+\begin{eqnarray}
+\label{Gx11}
+\alpha_{j_2}^{\prime} \nonumber
+&=& H_{2}(id_{j}, x_{j}, x_{i}, \sigma_{j_2}^{\prime})\nonumber \\
+&=& H_{2}(id_{j}, x_{j}, x_{i}, \sigma_{j_2}) \nonumber \\
+&=& \alpha_{j_2}
+\end{eqnarray}
+
+According to the Eq.~(\ref{Gx5}), Eq.~(\ref{Gx11}) and $sid =
+(id_{i}$, $id_{j}$, $x_{i}$, $x_{j}$, $w_{i_1}$, $w_{j_1}$,
+$\alpha_{i_1}$, $\alpha_{j_1})$, user $U_{i}$ computes the session
+key as
+\begin{eqnarray}
+\label{Gx12} SK = H_{3}(sid, \sigma_{i_1}, \sigma_{i_2},
+\sigma_{j_1}^{\prime}, \sigma_{j_2}^{\prime}) = H_{3}(sid,
+\sigma_{i_1}, \sigma_{i_2}, \sigma_{j_1}, \sigma_{j_2})
+\end{eqnarray}
+User $U_{j}$ justifies the legitimacy of $U_{i}$ by verifying
+whether $\alpha_{i_1}^{\prime} = \alpha_{i_1}$ and
+$\alpha_{i_2}^{\prime} = \alpha_{i_2}$. Based on the Lemma~\ref{LM3}
+and Eq.~(\ref{Gx6}), we get:
+\begin{eqnarray}
+\label{Gx13}
+\sigma_{i_1}^{\prime}\nonumber
+&=& \mbox{\textbf{Mod}}_{2}(t_{j_1}, w_{i_1}) \nonumber \\
+&=& \mbox{\textbf{Mod}}_{2}(t_{j_1}, \mbox{\textbf{Cha}}(t_{i_1})) \nonumber \\
+&=& \mbox{\textbf{Mod}}_{2}(t_{i_1}, \mbox{\textbf{Cha}}(t_{i_1})) \nonumber \\
+&=& \sigma_{i_1}
+\end{eqnarray}
+Thus, according to the Eq.~(\ref{Gx13}), we also get:
+\begin{eqnarray}
+\label{Gx14} \alpha_{i_1}^{\prime} \nonumber
+&=& H_{1}(id_{i}, x_{i}, \sigma_{i_1}^{\prime}) \nonumber \\
+&=& H_{1}(id_{i}, x_{i}, \sigma_{i_1}) \nonumber \\
+&=& \alpha_{i_1}
+\end{eqnarray}
+Hence, from the Lemma~\ref{LM3} and Eq.~(\ref{Gx9}), we get:
+\begin{eqnarray}
+\label{Gx15} \sigma_{i_2}^{\prime}\nonumber
+&=& \mbox{\textbf{Mod}}_{2}(t_{j_2}, w_{i_2}) \nonumber \\
+&=& \mbox{\textbf{Mod}}_{2}(t_{j_2}, \mbox{\textbf{Cha}}(t_{i_2})) \nonumber \\
+&=& \mbox{\textbf{Mod}}_{2}(t_{i_2}, \mbox{\textbf{Cha}}(t_{i_2})) \nonumber \\
+&=& \sigma_{i_2}
+\end{eqnarray}
+Thus, according to the Eq.~(\ref{Gx15}), we also get:
+\begin{eqnarray}
+\label{Gx16} \alpha_{i_2}^{\prime} \nonumber
+&=& H_{2}(id_{i}, x_{i}, x_{j}, \sigma_{i_2}^{\prime})\nonumber \\
+&=& H_{2}(id_{i}, x_{i}, x_{j}, \sigma_{i_2})\nonumber \\
+&=& \alpha_{i_2}
+\end{eqnarray}
+
+According to the Eq.~(\ref{Gx13}), Eq.~(\ref{Gx15}) and $sid =
+(id_{i}$, $id_{j}$, $x_{i}$, $x_{j}$, $w_{i_1}$, $w_{j_1}$,
+$\alpha_{i_1}$, $\alpha_{j_1})$, $U_{j}$ calculates the session key
+as
+\begin{eqnarray}
+\label{Gx17} SK = H_{3}(sid, \sigma_{i_1}^{\prime},
+\sigma_{i_2}^{\prime}, \sigma_{j_1}, \sigma_{j_2}) H_{3}(sid,
+\sigma_{i_1}, \sigma_{i_2}, \sigma_{j_1}, \sigma_{j_2})
+\end{eqnarray}
+According to the Eq.~(\ref{Gx12}) and Eq.~(\ref{Gx17}), $U_{i}$ and
+$U_{j}$ successfully established a common secret session key $SK =
+H_{3}(sid, \sigma_{i_1}, \sigma_{i_2}, \sigma_{j_1}, \sigma_{j_2})$
+between them.
+\end{proof}
+
+\subsection{Provable Security}
+\begin{theorem}
+\label{Th2} \normalfont Let $Adv^{LB-2PAKA}_{\mathcal{A}}(t)$ be the
+probability of success of $\mathcal{A}$ to infringement the semantic
+security of the session key and mutual authentication between
+$U_{i}$ and $U_{j}$ in our LB-2PAKA protocol with in a polynomial
+time-bound $t$. Assume that $Adv^{RLWE}_{\mathcal{A}}(t^{\prime})$
+is the advantage of $\mathcal{A}$ to solve an instance of the RLWE
+problem within a polynomial time-bound $t^{\prime}$. $\mathcal{A}$
+is allowed to ask maximum $q_{H_{i}}$ ($i = 1, 2, 3$), $q_{se}$, and
+$q_{ex}$ number of queries to $H_{i}$ oracle, \emph{Send} oracle,
+and \emph{Execute} oracle, respectively and $T_{smul}$ denotes the
+running time required to perform one componentwise multiplication
+with scalar operation in $\mathbb{R}_{q}$. Therefore we have:
+\begin{eqnarray}
+Adv^{LB-2PAKA}_{\mathcal{A}}(t) & \leq& \frac{q_{H_1}^{2}}{2l} +
+\frac{q_{H_2}^{2}}{2l} + \frac{(q_{ex}+q_{se})^{2}}{2^{l}} +
+\frac{q_{H_3}^{2}}{2^{l}}+(q_{ex}+q_{se})Adv^{RLWE}_{\mathcal{A}}(t^{\prime})
+\nonumber
+\end{eqnarray}
+\begin{eqnarray}
+t^{\prime}&\leq& t + (2q_{ex} + 4q_{sc} + 2q_{H_1} + 2q_{H_2} +
+1)\cdot T_{smul} \nonumber
+\end{eqnarray}
+\end{theorem}
+
+\begin{proof}
+\normalfont Assume that the semantic security of the session key of
+our LB-2PAKA protocol can be violated by $\mathcal{A}$, then a
+challenger $\mathcal{C}$, which runs a PPT algorithm, can solve an
+instance of the RLWE problem in
+$\mathbb{R}_{q}\times\mathbb{R}_{q}$. We consider the games
+\textbf{$Game_i$} $(0\le i\le 4)$, where \textbf{$Game_0$} defines
+the real attack on our LB-2PAKA protocol \cite{islam2016,VS2006}. In
+each game \textbf{$Game_i$} is interactively played between
+$\mathcal{A}$ and $\mathcal{C}$. In each game, to get a response
+with the correct output for an oracle query, $\mathcal{C}$ runs a
+PPT algorithm. It can be noted that, for every \textbf{$Game_i$}, an
+event $X_{i}$ $(0\le i\le 4)$ is defined based on which
+$\mathcal{A}$ wins in breaching the semantic security a session key
+of our LB-2PAKA protocol in $Game_i$. Suppose that the event $E$
+that is independent of $X_i$, may occur during the simulation of the
+LB-2PAKA protocol by $\mathcal{A}$ such that $E$ is detectable by
+$\mathcal{C}$. Noted that $Game_i$ and $Game_{i+1}$ are
+indistinguishable unless $E$ occurs. Therefore, we have:
+\begin{eqnarray}
+|Pr[X_{i+1}]-Pr[X_{i}]| &\leq & Pr[E]
+\end{eqnarray}
+
+\noindent $Game_0$:~The simulation of this game is indistinguishable
+to the real attack on our LB-2PAKA protocol in ROM. In this game,
+$\mathcal{A}$ does not alter the simulation strategies of the
+different oracles, i.e., all the instances of the users
+$P\in\mathbb{U}$ is modeled as the real execution of the LB-2PAKA
+protocol in ROM. Therefore, we have:
+\begin{eqnarray}
+\label{G0} Adv^{LB-2PAKA}_{\mathcal{A}}(t)=|Pr[X_0] - \frac{1}{2}|
+\end{eqnarray}
+
+\noindent $Game_1$:~The simulation of this game is indistinguishable
+with the game $Game_0$ other than $\mathcal{A}$ executes different
+\textbf{Hash queries} other than the ways executed in the game
+$Game_0$. In this game, $\mathcal{C}$ maintains three
+initially-empty lists $H^{list}_{j}$, $j=1,2,3$ with the tuples of
+the form $(x$, $y)$, where $x$ is the input to a \textbf{Hash}
+oracle and $y$ is the corresponding output. If $\mathcal{A}$ asks a
+\textbf{Hash} query for the input $x$, $\mathcal{C}$ explores
+$H^{list}_{j}$, $j=1,2,3$ and returns $y$ as answer to $\mathcal{A}$
+if a record $(x, y)$ is found in $H^{list}_{j}$, $j=1,2,3$.
+Otherwise, $\mathcal{C}$ randomly chooses a value
+$y\in\mathbb{Z}_{q}$, returns it to $\mathcal{A}$ and incorporates
+the new tuple $(x$, $y)$ to $H^{list}_{j}$, $j=1,2,3$. The real
+attack in ROM and the simulation of this game are absolutely
+indistinguishable since the other oracles \textbf{Execute},
+\textbf{Send}, \textbf{Reveal}, \textbf{RevealEph},
+\textbf{Corrupt}, and \textbf{Test} are also simulated similar way
+as executed in the real attack. Thus, we have:
+\begin{eqnarray}
+\label{G1} Pr[X_1]=Pr[X_0]
+\end{eqnarray}
+
+\noindent $Game_2$:~The simulation of this game is indistinguishable
+with the game $Game_1$ other than it will be aborted if a
+\emph{collision} is found in the simulation of $\langle id_{i}$,
+$x_{i}$, $w_{i_1}$, $\alpha_{i_1}\rangle$, $\langle id_{j}$,
+$x_{j}$, $w_{j_1}$, $\alpha_{j_1}\rangle$, $\langle id_{i}$,
+$w_{i_2}$, $\alpha_{i_2}\rangle$, and $\langle id_{j}$, $w_{j_2}$,
+$\alpha_{j_2}\rangle$. Based on the birthday paradox, the
+probability of collisions in output of the oracles $H_{1}$ and
+$H_{2}$ are at most $\frac{q_{H_1}^{2}}{2l}$ and
+$\frac{q_{H_2}^{2}}{2l}$, respectively. Likewise, the probability of
+collision in output of the oracle $H_{3}$ is at most $\frac{(q_{sc}
++ q_{ex})^{2}}{2^{l}}$. Thus, we have:
+\begin{eqnarray}
+\label{G2} |Pr[X_2]-Pr[X_1]| &\leq&
+\frac{q_{H_1}^{2}}{2l}+\frac{q_{H_2}^{2}}{2l}+\frac{(q_{ex}+q_{se})^{2}}{2^{l}}
+\end{eqnarray}
+
+\noindent $Game_3$:~The simulation of this game is indistinguishable
+with the game $Game_2$ other than $\mathcal{A}$ queries oracle
+$H_{3}$ with the input of $(sid$, $\sigma_{i_1}$, $\sigma_{i_2}$,
+$\sigma_{j_1}^{\prime}$, $\sigma_{j_2}^{\prime})$. Therefore, the
+probability of guessing the bit $b$, which was selected in the
+\textbf{\emph{Test}} query with the oracle $H_{3}$ is at most
+$\frac{q_{H_3}^{2}}{2^{l}}$. Thus, we have:
+
+\begin{eqnarray}
+\label{G3} |Pr[X_3]-Pr[X_2]| &\leq& \frac{q_{H_3}^{2}}{2^{l}}
+\end{eqnarray}
+\noindent $Game_4$: In this game, different types of guessing
+attacks through offline modes are considered, i.e., he session key
+$SK$ may be computed without simulating $H_{3}$ oracle.
+\begin{itemize}
+\item Here, $SK$ is predicted without simulating the oracle $H_{3}$,
+i.e., $SK$ is absolutely independent from $H_{3}$ and $(sid$,
+$\sigma_{i_1}$, $\sigma_{i_2}$, $\sigma_{j_1}^{\prime}$,
+$\sigma_{j_2}^{\prime})$. According to our LB-2PAKA protocol, both
+the usres$U_{i}$ and $U_{j}$ compute the session key as $SK =
+H_{3}(sid$, $\sigma_{i_1}$, $\sigma_{i_2}$, $\sigma_{j_1}^{\prime}$,
+$\sigma_{j_2}^{\prime})$, where $sid = (id_{i}$, $id_{j}$, $x_{i}$,
+$x_{j}$, $w_{i_1}$, $w_{j_1}$, $\alpha_{i_1}$, $\alpha_{j_1})$,
+$\sigma_{i_1} = \mbox{\textbf{Mod}}_{2}(t_{i_1}, w_{i_1})$,
+$\sigma_{j_1} = \mbox{\textbf{Mod}}_{2}(t_{j_1}, w_{j_1})$,
+$\sigma_{i_2} = \mbox{\textbf{Mod}}_{2}(t_{i_2}, w_{i_2})$ and
+$\sigma_{j_2} = \mbox{\textbf{Mod}}_{2}(t_{j_2}, w_{j_2})$.
+Accordingly, we say that if $\mathcal{A}$ can successfully guess
+$SK$, then the adversary $\mathcal{A}$ can solve an instance of RLWE
+problem with in polynomial time bound $t^{\prime}$ by interacting
+with the challenger $\mathcal{C}$. Therefore, we have:
+\begin{eqnarray}
+\label{G4} |Pr[X_4]-Pr[X_3]| &\leq &
+(q_{ex}+q_{se})Adv^{RLWE}_{\mathcal{A}}(t^{\prime})
+\end{eqnarray}
+
+\item If $\mathcal{A}$ doesn't simulate $H_{3}$ with the correct
+input $(sid$,$\sigma_{A}$, $\sigma_{B}$), then $\mathcal{A}$ has no
+advantage in distinguishing the real session key and a random
+session key
+\end{itemize}
+Therefore, we have:
+\begin{eqnarray}
+\label{G5} Pr[X_4] = \frac{1}{2}
+\end{eqnarray}
+From the Eq. (\ref{G0}), we have:
+\begin{eqnarray}
+\label{G6} Adv^{LB-2PAKA}_{\mathcal{A}}(t) \nonumber
+&=& |Pr[X_0] - \frac{1}{2}| \nonumber \\
+&=& |Pr[X_0] - Pr[X_4] + Pr[X_4] - \frac{1}{2}| \nonumber \\
+&=& |Pr[X_0] - Pr[X_4]|
+\end{eqnarray}
+
+From the Eq. (\ref{G6}) and using the Eqs. (\ref{G0}) - (\ref{G5}),
+we have:
+\begin{eqnarray}
+Adv^{LB-2PAKA}_{\mathcal{A}}(t)\nonumber
+&=& |Pr[X_0] - Pr[X_1] + Pr[X_1] - Pr[X_2] + Pr[X_2] - Pr[X_3] + Pr[X_3] - Pr[X_4]| \nonumber \\
+& \leq & \frac{q_{H_1}^{2}}{2l} + \frac{q_{H_2}^{2}}{2l} +
+\frac{(q_{ex}+q_{se})^{2}}{2^{l}} +
+\frac{q_{H_3}^{2}}{2^{l}}+(q_{ex}+q_{se})Adv^{RLWE}_{\mathcal{A}}(t^{\prime})
+\nonumber
+\end{eqnarray}
+
+\begin{eqnarray}
+t^{\prime} &\leq& t + (2q_{ex} + 4q_{sc} + 2q_{H_1} + 2q_{H_2} +
+1)\cdot T_{smul} \nonumber
+\end{eqnarray}
+\end{proof}
+
+\subsection{Further Security Discussion}
+Ths subsection is proposed to justify the security attributes
+\cite{Islamgpwpc2015} provided by our LB-2PAKA protocol.
+
+\subsubsection{\textbf{Man-in-the-Middle (MITM) Attack}}~In our LB-2PAKA
+protocol, user $U_{i}$ sends the messages $\langle id_{i}$, $x_{i}$,
+$w_{i_1}$, $\alpha_{i_1}\rangle$ and $\langle id_{i}$, $w_{i_2}$,
+$\alpha_{i_2}\rangle$ to the user $U_{j}$, where $\alpha_{i_1} =
+H_{1}(id_{i}, x_{i}, \sigma_{i_1})$ and $\alpha_{i_2} =
+H_{2}(id_{i}, x_{i}, x_{j}, \sigma_{i_2})$. Assume that an adversary
+$\mathcal{A}$ captures these two messages and then tried to
+fabricated them. However, the fabrication of the messages $\langle
+id_{i}$, $x_{i}$, $w_{i_1}$, $\alpha_{i_1}\rangle$ and $\langle
+id_{i}$, $w_{i_2}$, $\alpha_{i_2}\rangle$ is not possible. Because
+$\mathcal{A}$ has to compute two forged authenticators in place of
+$\alpha_{i_1}$ and $\alpha_{i_2}$. For this purpose, $\mathcal{A}$
+has to compute $w_{i_1} = \mbox{\textbf{Cha}}(t_{i_1})$ and
+$\sigma_{i_1} = \mbox{\textbf{Mod}}_{2}(t_{i_1}, w_{i_1})$, which is
+equivalent solve the RLWR problem for the instance
+$(\textbf{\emph{a}}$, $p_{i}) = (\textbf{\emph{a}}$,
+$\textbf{\emph{a}}\cdot s_{i} + 2\cdot\textbf{\emph{e}}_{i})$ or
+$(\textbf{\emph{a}}$, $p_{j}) = (\textbf{\emph{a}}$,
+$\textbf{\emph{a}}\cdot s_{j} + 2\cdot\textbf{\emph{e}}_{j})$.
+Similarly, $\mathcal{A}$ has to solve the RLWE problem for the
+instance $(\textbf{\emph{a}}$, $x_{i}) = (\textbf{\emph{a}}$,
+$\textbf{\emph{a}}\cdot r_{i} + 2\cdot\textbf{\emph{f}}_{i})$ or
+$(\textbf{\emph{a}}$, $x_{j}) = (\textbf{\emph{a}}$,
+$\textbf{\emph{a}}\cdot r_{j} + 2\cdot\textbf{\emph{f}}_{j})$ to
+compute the forged authenticator in place of $\alpha_{i_2}$.
+Therefore, $\mathcal{A}$ cannot impersonate the initiator $U_{i}$.
+In the same way, user $U_{j}$ sends the messages $\langle id_{j}$,
+$x_{j}$, $w_{j_1}$, $\alpha_{j_1}\rangle$ and $\langle id_{j}$,
+$w_{j_2}$, $\alpha_{j_2}\rangle$ to the user $U_{i}$, where
+$\alpha_{j_1} = H_{1}(id_{j}, x_{j}, \sigma_{j_1})$ and
+$\alpha_{j_2} = H_{2}(id_{j}, x_{j}, x_{i}, \sigma_{j_2})$. By the
+similar reason, $\mathcal{A}$ cannot impersonate the responder
+$U_{j}$. Accordingly, our LB-2PAKA protocol withstands the
+Man-in-the-Middle (MITM) attack.
+
+\subsubsection{\textbf{Known-Key (KK) Attack}}~The known-key attack
+says that an adversary $\mathcal{A}$ is unable to generate the
+current session key even if the exchanged messages and the session
+keys of some earlier sessions are known to $\mathcal{A}$. In our
+LB-2PAKA protocol, $U_{i}$ and $U_{j}$ calculates the session $SK =
+H_{3}(sid$, $\sigma_{i_1}$, $\sigma_{i_2}$, $\sigma_{j_1}$,
+$\sigma_{j_2})$ in a session. Assume that $\mathcal{A}$ captures all
+the messages $\langle id_{i}$, $x_{i}$, $w_{i_1}$,
+$\alpha_{i_1}\rangle$, $\langle id_{i}$, $w_{i_2}$,
+$\alpha_{i_2}\rangle$, $\langle id_{j}$, $x_{j}$, $w_{j_1}$,
+$\alpha_{j_1}\rangle$ and $\langle id_{j}$, $w_{j_2}$,
+$\alpha_{j_2}\rangle$ for a session and the session key $SK$ of that
+session is disclosed. Despite the disclosure of $SK$, $\mathcal{A}$
+is unable compute the session keys of other sessions due to the
+onewayness of the hash function $H_{3}(\cdot)$ and the freshness of
+the samples $r_{i}$, $r_{j}$, $f_{i}$ and $f_{j}$ drawn at random
+from $\chi_{\beta}$.
+
+\subsubsection{\textbf{Key-Compromise Impersonation (KCI) Attack}}
+Assume that an adversary $\mathcal{A}$ knows the private key
+$(s_{i}$, $e_{i})$ of the initiator $U_{i}$. However, $\mathcal{A}$
+may not be able to impersonate the responder $U_{j}$ to $U_{i}$. In
+a session, $U_{i}$ draws two random samples $r_{i}$,
+$f_{i}\xleftarrow[]{R}\chi_{\beta}$, then computes the message
+$\langle id_{i}$, $x_{i}$, $w_{i_1}$, $\alpha_{i_1}\rangle$ and
+sends it to $U_{j}$ ($\mathcal{A}$). Assume that $\mathcal{A}$
+captures the message $\langle id_{i}$, $x_{i}$, $w_{i_1}$,
+$\alpha_{i_1}\rangle$ and tried to impersonate $U_{j}$ to $U_{i}$ as
+follows. To impersonate $U_{j}$ and to know the session key $SK$ of
+that session, $\mathcal{A}$ draws two random samples $r_{j}$,
+$f_{j}\xleftarrow[]{R}\chi_{\beta}$, computes the message $\langle
+id_{j}$, $x_{j}$, $w_{j_1}$, $\alpha_{j_1}\rangle$ and sends it to
+$U_{i}$. As a response, $U_{i}$ computes $\langle id_{i}$,
+$w_{i_2}$, $\alpha_{i_2}\rangle$ and sends it to $\mathcal{A}$. In
+response, $\mathcal{A}$ computes $\langle id_{j}$, $w_{j_2}$,
+$\alpha_{j_2}\rangle$ and sends it to $U_{i}$.  However,
+$\mathcal{A}$ cannot compute the session key $SK = H_{3}(sid$,
+$\sigma_{i_1}$, $\sigma_{i_2}$, $\sigma_{j_1}$, $\sigma_{j_2})$
+because $\sigma_{i_1}$, $\sigma_{i_2}$, $\sigma_{j_1}$, and
+$\sigma_{j_2}$ are unknown to him/her due to private key $(s_{j}$,
+$e_{j})$ and secret random samples $(r_{i}$, $f_{i})$. Accordingly,
+our LB-2PAKA protocol withstands the KCI attack.
+
+\subsubsection{\textbf{Unknown Key-Share (UKS) Attack}}~Assume that
+$U_{i}$ and $U_{j}$ generate a fresh and common session key $SK =
+H_{3}(sid$, $\sigma_{i_1}$, $\sigma_{i_2}$, $\sigma_{j_1}$,
+$\sigma_{j_2})$ among them in a session. In our LB-2PKA protocol,
+neither entity believe that $SK$ is shared with an adversary
+$\mathcal{A}$. Because, both of $U_{i}$ and $U_{j}$ compute the
+session key $SK$ after mutually authenticating each other by
+verifying whether
+$\alpha_{j_1}^{\prime}\stackrel{?}{=}\alpha_{j_1}$,
+$\alpha_{i_1}^{\prime}\stackrel{?}{=}\alpha_{i_1}$,
+$\alpha_{j_2}^{\prime}\stackrel{?}{=}\alpha_{j_2}$ and
+$\alpha_{i_2}^{\prime}\stackrel{?}{=}\alpha_{i_2}$ are correct.
+Hence, our LB-2PKA protocol is free from the UKS attack.
+
+\subsubsection{\textbf{Ephemeral Secret Leakage (ESL) Attack}}~
+In our LB-2PKA protocol, $U_{i}$ and $U_{j}$ generate a fresh and
+common session key $SK = H_{3}(sid$, $\sigma_{i_1}$, $\sigma_{i_2}$,
+$\sigma_{j_1}$, $\sigma_{j_2})$ between then in each session, where
+the computation of $\sigma_{i_1}$ and $\sigma_{j_1}$ depends on the
+private keys $(s_{i}$, $e_{i})$ of $U_{i}$ and  $(s_{j}$, $e_{j})$
+of $U_{j}$. Besides, computation of $\sigma_{i_1}$ and
+$\sigma_{j_1}$ depends on the random samples $(r_{i}$, $f_{i})$
+selected by $U_{i}$ and $(r_{j}$, $f_{j})$ selected by $U_{j}$.
+Therefore, an adversary $\mathcal{A}$ is unable to generate the
+session key $SK$ even if $(r_{i}$, $f_{i})$ and $(r_{j}$, $f_{j})$
+are known to him/her. Thus, our LB-2PAKA protocol withstands the ESL
+attack.
+
+\subsubsection{\textbf{Perfect Forward Secrecy (PFS)}}~Assume that
+the private keys $(s_{i}$, $e_{i})$ of $U_{i}$ and $(s_{j}$,
+$e_{j})$ of $U_{j}$ are somehow disclosed to an adversary
+$\mathcal{A}$. Despite having the private keys of $U_{i}$ and
+$U_{j}$, $\mathcal{A}$ cannot compute the $SK = H_{3}(sid$,
+$\sigma_{i_1}$, $\sigma_{i_2}$, $\sigma_{j_1}$, $\sigma_{j_2})$,
+which is computed between $U_{i}$ and $U_{j}$ in a session. Because
+the random samples $(r_{i}$, $f_{i})$ selected by $U_{i}$ and
+$(r_{j}$, $f_{j})$ selected by $U_{j}$ are still unknown to
+$\mathcal{A}$. Thus, our LB-2PKA protocol provides the PFS of the
+session key.
+
+\subsubsection{\textbf{No Key Control (NKC)}}~In our LB-2PKA protocol,
+$U_{i}$ and $U_{j}$ establish a common session key $SK = H_{3}(sid$,
+$\sigma_{i_1}$, $\sigma_{i_2}$, $\sigma_{j_1}$, $\sigma_{j_2})$ by
+incorporating the the random samples $(r_{i}$, $f_{i})$ selected by
+$U_{i}$ and $(r_{j}$, $f_{j})$ selected by $U_{j}$. Therefore, none
+of $U_{i}$ and $U_{j}$ alone can determine the session key. Hence,
+we can conclude that our LB-2PKA protocol provides NKC property of
+the session key.
+
+\section{Performance Analysis}
+\label{L6}This section is devoted to present the performance
+analysis of our LB-2PAKA protocol against the efficiency measurement
+attributes (i) execution cost, and (ii) communication cost.
+According to \cite{Saraswathy2017,FengHe2018}, we choose
+$\mbox{log}_{2}\beta = 17.1$ for the Gaussian sampling distribution.
+We use the SHA-512 hash function for hashing operation. The length
+of the digest of the SHA-512 function is 512 bits. We choose the
+length of $n$, $q$, and an element in $\mathbb{R}_{q}$ are
+1024~bits, 12289~bits, 4096~bits, respectively. As discussed in
+section \ref{L12} that Zhang et al.'s protocol \cite{ZhangJ2015} is
+an unauthenticated two-party key agreement protocol; therefore, we
+are not comparing it with our LB-2PAKA protocol. Accordingly, we
+only estimate the execution cost and communication cost of our
+LB-2PAKA protocol in this section.
+
+\subsection{Execution Cost} \label{L61}
+Here, we estimated the execution cost of our LB-2PAKA protocol. To
+calculate the running time of our LB-2PAKA protocol, we consider
+different cryptographic operations as follows: $T_{Ge}$, $T_{smul}$,
+$T_{pmul}$, $T_{pma}$, $T_{cha}$ and $T_{H}$ denote the running time
+time to draw a sample value from the $\chi_{\beta}$ distribution,
+execute a component-wise multiplication with scalar operation in
+$\mathbb{R}_{q}$, to execute a component-wise multiplication
+operation in $\mathbb{R}_{q}$, to execute a component-wise
+multiplication and addition operation in $\mathbb{R}_{q}$, to
+execute a \textbf{Cha} operation in $\mathbb{R}_{q}$ and to
+calculate a digest value for the SHA-512 hash function $H$,
+respectively. In comparison, we ignored the
+$\mbox{\textbf{Mod}}_{2}$ operation in $\mathbb{R}_{q}$ since it is
+equivalent AND operation and thus its running time is ignorable.
+
+The implementation of our LB-2PAKA protocol simulated using
+LatticeCrypto Library \cite{LCL2019}. Based on the experimental
+setup given in \cite{FengHe2018}, it is assumed that $U_{i}$ and
+$U_{j}$ executes the proposed LB-2PAKA protocol using a Dell desktop
+PC with the following configurations (i) Operating system: Windows
+10 Professional, (ii) CPU: 3.4-GHz Intel(R) Core(TM) i7-6700
+processor, and (iii) RAM: 8GB. The mode of message exchange between
+$U_{i}$ and $U_{j}$ is Bluetooth communication. In this environment,
+the average running time of different ideal lattice-based operations
+(in nanoseconds), which have been estimated over 100000 executions,
+are given in Table~\ref{tab2}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}[h]
+\centering \caption{Execution cost} \label{tab2} \scalebox{1}{
+\begin{tabular}{|l|c|c|c|c|c|c|}
+\hline
+\textbf{Notation}   &  $T_{Ge}$    & $T_{smul}$   & $T_{pmul}$   & $T_{pma}$    & $T_{cha}$    & $T_{H}$     \\
+\hline
+\textbf{Time}       & $73.503~ns$  & $00.298~ns$  & $00.307~ns$  & $02.549~ns$  & $00.698~ns$  & $14.09~ns$  \\
+\hline
+\end{tabular}}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+In key agreement phase, the initiator $U_{i}$ draws two random
+samples $r_{i}$, $f_{i}$ $\xleftarrow[]{R}\chi_{\beta}$ and
+generates the message $\langle id_{i}$, $x_{i}$, $w_{i_1}$,
+$\alpha_{i_1}\rangle$. The execution cost for the message $\langle
+id_{i}$, $x_{i}$, $w_{i_1}$, $\alpha_{i_1}\rangle$ is $2T_{Ge} +
+T_{smul} + T_{pma} + T_{pmul} + T_{cha} + T_{H}\approx164.948~ns$.
+After receiving the message $\langle id_{i}$, $x_{i}$, $w_{i_1}$,
+$\alpha_{i_1}\rangle$, the responder $U_{j}$ verifies it by checking
+whether $\alpha_{i_1}^{\prime}\stackrel{?}{=}\alpha_{i_1}$ is
+correct and the associated execution cost is $T_{H}\approx14.09~ns$.
+In addition, the responder $U_{j}$ performed the similar
+computations to generated the message $\langle id_{j}$, $x_{j}$,
+$w_{j_1}$, $\alpha_{j_1}\rangle$ and hence the execution cost is
+$164.948~ns$. After receiving the message $\langle id_{j}$, $x_{j}$,
+$w_{j_1}$, $\alpha_{j_1}\rangle$, $U_{i}$ verifies it by checking
+whether $\alpha_{j_1}^{\prime}\stackrel{?}{=}\alpha_{j_1}$ is
+correct and the associated execution cost is $T_{H}\approx14.09~ns$.
+In addition, $U_{i}$ computes the messages $\langle id_{i}$,
+$w_{i_2}$, $\alpha_{i_2}\rangle$ and its execution cost is $T_{pma}
++ T_{cha} + T_{H}\approx17.337~ns$. After receiving the message
+$\langle id_{i}$, $w_{i_2}$, $\alpha_{i_2}\rangle$, $U_{j}$ verifies
+it by checking whether
+$\alpha_{i_2}^{\prime}\stackrel{?}{=}\alpha_{2_1}$ is correct and
+the associated execution cost is $T_{H}\approx14.09~ns$. Next,
+$U_{j}$ computes the message $\langle id_{j}$, $w_{j_2}$,
+$\alpha_{j_2}\rangle$ and the corresponding execution cost for this
+message is $T_{pma} + T_{cha} + T_{H}\approx17.337~ns$. In addition,
+$U_{j}$ computes a session key $SK = H_{3}(sid$, $\sigma_{i_1}$,
+$\sigma_{i_2}$, $\sigma_{j_1}$, $\sigma_{j_2})$ and the execution
+cost for it is $T_{H}\approx14.09~ns$. The execution cost for
+$U_{i}$ to verify the message $\langle id_{j}$, $w_{j_2}$,
+$\alpha_{j_2}\rangle$ by executing whether
+$\alpha_{j_2}^{\prime}\stackrel{?}{=}\alpha_{j_2}$ is
+$T_{H}\approx14.09~ns$. The execution cost for $U_{i}$ to compute
+the session key $SK$ is $T_{H}\approx14.09~ns$. Therefore, the
+overall execution cost of our LB-2PAKA protocol is $2\times(164.948
++ 3\times14.09 + 17.337)\approx224.555~ns$.
+
+\subsection{Communication Cost} \label{L62}
+To compute a session key, the initiator $U_{i}$ sends the messages
+$\langle id_{i}$, $x_{i}$, $w_{i_1}$, $\alpha_{i_1}\rangle$ and
+$\langle id_{i}$, $w_{i_2}$, $\alpha_{i_2}\rangle$ to the responder
+$U_{j}$. Then the responder $U_{j}$, sends the messages $\langle
+id_{j}$, $x_{j}$, $w_{j_1}$, $\alpha_{j_1}\rangle$ and $\langle
+id_{j}$, $w_{j_2}$, $\alpha_{j_2}\rangle$ to the initiator $U_{i}$.
+Here $\{x_{i}$, $x_{j}\}\in\{0,1\}^{4096}$, $\{w_{i_1}$, $w_{i_2}$,
+$w_{j_1}$, $w_{j_2}\}\in\{0,1\}$, $\{\alpha_{i_1}$, $\alpha_{i_2}$,
+$\alpha_{j_1}$, $\alpha_{j_2}\}\in\{0,1\}^{512}$. Therefore, the
+communication overhead of our LB-2PAKA protocol is estimated as
+$4096\times 2 + 1\times 4 + 512\times 6 = 10244$~bits per session.
+
+\section{Conclusion}
+\label{L7}We design an LB-2PAKA protocol with the hardness
+assumption of the RLWE problem. In our protocol, two users can set
+up a shared session key for each session among them over an insecure
+network, which is monitored by an adversary. Our LB-2PAKA protocol
+offers provable security in the random oracle model. Our provable
+security analysis showed that the probability of an adversary to
+infringement the semantic security of the session key is negligible,
+and the time need is more than the time required to break the RLWE
+problem. We also examine the execution time of our LB-2PAKA protocol
+using the LatticeCrypto Library. Besides, we analyze the
+communication overhead of our LB-2PAKA protocol. We believe that our
+LB-2PAKA protocol will be more suitable than the traditional 2PAKA
+protocols for many Internet-based applications in post-quantum
+environments.
+
+%\bibliographystyle{elsarticle-num}
+\bibliographystyle{plain}
+\bibliography{2paka}
+
+\end{document}
