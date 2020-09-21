@@ -18,3 +18,5 @@ Collection of (my) research preprints and associated code
 [Pollution Research, EM International](http://www.envirobiotechjournals.com/article_abstract.php?aid=8650&iid=248&jid=4)
 
 [Pollution Research, EM International](http://www.envirobiotechjournals.com/article_abstract.php?aid=8207&iid=239&jid=4)
+
+Quantum Machine Learning [Data Management, Analytics and Innovation. Advances in Intelligent Systems and Computing, Springer](https://link.springer.com/chapter/10.1007%2F978-981-15-5619-7_8)
