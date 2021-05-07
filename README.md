@@ -11,7 +11,7 @@ Collection of (my) research preprints and associated code
 
 ## Publication links
 
-[A comprehensive review on collision-resistant hash functions on lattices](https://www.sciencedirect.com/science/article/abs/pii/S2214212621000296)
+[A comprehensive review on collision-resistant hash functions on lattices, Journal of Information Security and Applications](https://www.sciencedirect.com/science/article/abs/pii/S2214212621000296)
 
 [Automation of quantum Braitenberg vehicles using finite automata: Moore machines, Quantum Information Processing](https://link.springer.com/article/10.1007/s11128-019-2512-2)
 
