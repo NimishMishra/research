@@ -26,4 +26,4 @@ Collection of (my) research preprints and associated code
 
 ## General pointers
 
-- A note on parameterization in ring-LWE problems [Signatures, Commitments, Zero-Knowledge, and Applications](https://www.youtube.com/watch?v=N5nKGtugxYY&t=30s)
+- A note on parameterization in ring-LWE problems [Signatures, Commitments, Zero-Knowledge, and Applications](https://www.youtube.com/watch?v=N5nKGtugxYY&t=30s) 
