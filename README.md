@@ -9,12 +9,15 @@ Collection of (my) research preprints and associated code
 
 [LinkedIn profile](https://www.linkedin.com/in/nimish-mishra-2ab313106/)
 
+## Talks
+
+[Getting started with research, DSC IIIT Kalyani](https://youtu.be/e2EY_3GA9-A?t=773)
+
 ## Publication links
 
 [A comprehensive review on collision-resistant hash functions on lattices, Journal of Information Security and Applications](https://www.sciencedirect.com/science/article/abs/pii/S2214212621000296)
 
 [Automation of quantum Braitenberg vehicles using finite automata: Moore machines, Quantum Information Processing](https://link.springer.com/article/10.1007/s11128-019-2512-2)
-
 
 [Automation of quantum Braitenberg vehicles using finite automata: Moore machines, astrophysics data system](https://ui.adsabs.harvard.edu/abs/2019QuIP...19...17M/abstract)
 
