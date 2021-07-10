@@ -27,6 +27,11 @@ Collection of (my) research preprints and associated code
 
 [Quantum Machine Learning: A Review and Current Status, Data Management, Analytics and Innovation. Advances in Intelligent Systems and Computing, Springer](https://link.springer.com/chapter/10.1007%2F978-981-15-5619-7_8)
 
+
+## Related repositories
+
+[Blockchain and lattice based forward secure searchable encryption scheme for arbitrary recipients](https://github.com/sbis04/mediblock)
+
 ## General pointers
 
 - A note on parameterization in ring-LWE problems [Signatures, Commitments, Zero-Knowledge, and Applications](https://www.youtube.com/watch?v=N5nKGtugxYY&t=30s) 
