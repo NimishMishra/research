@@ -15,6 +15,8 @@ Collection of (my) research preprints and associated code
 
 ## Publication links
 
+- [Quantum-Assisted Activation for Supervised Learning in Healthcare-based Intrusion Detection Systems](https://ieeexplore.ieee.org/document/9813378)
+
 - [An efficient and forward-secure lattice-based searchable encryption scheme for the Big-data era](https://www.sciencedirect.com/science/article/abs/pii/S004579062100478X?dgcid=author)
 
 - [A comprehensive review on collision-resistant hash functions on lattices, Journal of Information Security and Applications](https://www.sciencedirect.com/science/article/abs/pii/S2214212621000296)
