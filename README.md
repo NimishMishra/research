@@ -9,6 +9,10 @@ Collection of (my) research preprints and associated code
 
 - [LinkedIn profile](https://www.linkedin.com/in/nimish-mishra-2ab313106/)
 
+## Bugs reported
+
+tee: add overflow check in register_shm_helper() [Fix added to Linux kernel](https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=573ae4f13f630d6660008f1974c0a8a29c30e18a)
+
 ## Talks
 
 [Getting started with research, DSC IIIT Kalyani](https://youtu.be/e2EY_3GA9-A?t=773)
